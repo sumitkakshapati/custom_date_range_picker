@@ -1,6 +1,7 @@
 import 'package:custom_date_range_picker/custom_date_range_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:material_color_generator/material_color_generator.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,7 +16,6 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         brightness: Brightness.light,
-        primarySwatch: Colors.purple,
       ),
       home: const MyHomePage(),
     );
@@ -81,20 +81,15 @@ class _MyHomePageState extends State<MyHomePage> {
           showCustomDateRangePicker(
             context,
             dismissible: true,
-            minimumDate: DateTime.now(),
+            minimumDate: DateTime(2000),
             maximumDate: DateTime.now().add(const Duration(days: 30)),
             endDate: endDate,
             startDate: startDate,
+            primaryColor: const Color(0xFF57559B),
             onApplyClick: (start, end) {
               setState(() {
                 endDate = end;
                 startDate = start;
-              });
-            },
-            onCancelClick: () {
-              setState(() {
-                endDate = null;
-                startDate = null;
               });
             },
           );
