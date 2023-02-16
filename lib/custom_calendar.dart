@@ -1,4 +1,5 @@
 import 'package:custom_date_range_picker/color_generator.dart';
+import 'package:custom_date_range_picker/date_extension.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -206,7 +207,7 @@ class CustomCalendarState extends State<CustomCalendar> {
         Expanded(
           child: Center(
             child: Text(
-              DateFormat('EE').format(dateList[i]),
+              DateFormat('E').format(dateList[i]),
               style: const TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w400,
@@ -442,9 +443,9 @@ class CustomCalendarState extends State<CustomCalendar> {
       startDate = date;
     } else if (startDate != date && endDate == null) {
       endDate = date;
-    } else if (startDate!.day == date.day && startDate!.month == date.month) {
+    } else if (DateUtilities.isSameDate(current: startDate!, other: date)) {
       startDate = null;
-    } else if (endDate!.day == date.day && endDate!.month == date.month) {
+    } else if (DateUtilities.isSameDate(current: endDate!, other: date)) {
       endDate = null;
     }
     if (startDate == null && endDate != null) {
@@ -457,10 +458,10 @@ class CustomCalendarState extends State<CustomCalendar> {
         startDate = endDate;
         endDate = d;
       }
-      if (date.isBefore(startDate!)) {
+      if (date.isBefore(endDate!)) {
         startDate = date;
       }
-      if (date.isAfter(endDate!)) {
+      if (date.isAfter(startDate!)) {
         endDate = date;
       }
     }

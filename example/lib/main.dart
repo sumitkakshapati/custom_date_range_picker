@@ -1,7 +1,6 @@
 import 'package:custom_date_range_picker/custom_date_range_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:material_color_generator/material_color_generator.dart';
 
 void main() {
   runApp(const MyApp());
