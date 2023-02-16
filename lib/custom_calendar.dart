@@ -1,3 +1,5 @@
+import 'package:custom_date_range_picker/color_generator.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -35,6 +37,7 @@ class CustomCalendar extends StatefulWidget {
 
 class CustomCalendarState extends State<CustomCalendar> {
   List<DateTime> dateList = <DateTime>[];
+  final List<int> _supportedyears = List.generate(160, (index) => 1940 + index);
 
   DateTime currentMonthDate = DateTime.now();
 
@@ -76,101 +79,121 @@ class CustomCalendarState extends State<CustomCalendar> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Column(
       children: <Widget>[
         Padding(
-          padding:
-              const EdgeInsets.only(left: 8.0, right: 8.0, top: 4, bottom: 4),
+          padding: const EdgeInsets.only(top: 20, bottom: 10),
           child: Row(
             children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  height: 38,
-                  width: 38,
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.all(Radius.circular(24.0)),
-                    border: Border.all(
-                      color: Theme.of(context).dividerColor,
+              Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: const BorderRadius.all(Radius.circular(4)),
+                  onTap: () {
+                    setState(() {
+                      currentMonthDate = DateTime(
+                          currentMonthDate.year, currentMonthDate.month, 0);
+                      setListOfDate(currentMonthDate);
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    child: Icon(
+                      CupertinoIcons.left_chevron,
+                      color: theme.primaryColor,
+                      size: 20,
                     ),
                   ),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      borderRadius:
-                          const BorderRadius.all(Radius.circular(24.0)),
-                      onTap: () {
-                        setState(() {
-                          currentMonthDate = DateTime(
-                              currentMonthDate.year, currentMonthDate.month, 0);
-                          setListOfDate(currentMonthDate);
-                        });
-                      },
-                      child: const Icon(
-                        Icons.keyboard_arrow_left,
-                        color: Colors.grey,
-                      ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: const BorderRadius.all(Radius.circular(4.0)),
+                  onTap: () {
+                    setState(() {
+                      currentMonthDate = DateTime(
+                          currentMonthDate.year, currentMonthDate.month + 2, 0);
+                      setListOfDate(currentMonthDate);
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    child: Icon(
+                      CupertinoIcons.right_chevron,
+                      color: theme.primaryColor,
+                      size: 20,
                     ),
                   ),
                 ),
               ),
               Expanded(
-                child: Center(
-                  child: Text(
-                    DateFormat('MMMM, yyyy').format(currentMonthDate),
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 20,
-                      color: Theme.of(context).textTheme.headline1!.color,
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
                 child: Container(
-                  height: 38,
-                  width: 38,
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.all(Radius.circular(24.0)),
-                    border: Border.all(
-                      color: Theme.of(context).dividerColor,
-                    ),
-                  ),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      borderRadius:
-                          const BorderRadius.all(Radius.circular(24.0)),
-                      onTap: () {
-                        setState(() {
-                          currentMonthDate = DateTime(currentMonthDate.year,
-                              currentMonthDate.month + 2, 0);
-                          setListOfDate(currentMonthDate);
-                        });
-                      },
-                      child: const Icon(
-                        Icons.keyboard_arrow_right,
-                        color: Colors.grey,
-                      ),
+                  padding: const EdgeInsets.only(left: 20),
+                  child: Text(
+                    DateFormat('MMMM').format(currentMonthDate),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 16,
+                      color: Color(0xFF474F5C),
                     ),
                   ),
                 ),
               ),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: theme.primaryColor,
+                  ),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: DropdownButton<int>(
+                  items: _supportedyears
+                      .map(
+                        (e) => DropdownMenuItem(
+                          value: e,
+                          child: Text("$e",
+                              style: TextStyle(
+                                color: theme.primaryColor,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              )),
+                        ),
+                      )
+                      .toList(),
+                  value: currentMonthDate.year,
+                  onChanged: (value) {
+                    setState(() {
+                      currentMonthDate =
+                          DateTime(value!, currentMonthDate.month, 1);
+                      setListOfDate(currentMonthDate);
+                    });
+                  },
+                  menuMaxHeight: 350,
+                  elevation: 1,
+                  isDense: true,
+                  underline: Container(),
+                  icon: Icon(
+                    Icons.expand_more_rounded,
+                    color: theme.primaryColor,
+                  ),
+                ),
+              )
             ],
           ),
         ),
         Padding(
-          padding: const EdgeInsets.only(right: 8, left: 8, bottom: 8),
+          padding: const EdgeInsets.only(bottom: 20, top: 20),
           child: Row(
             children: getDaysNameUI(),
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.only(right: 8, left: 8),
-          child: Column(
-            children: getDaysNoUI(),
-          ),
+        Column(
+          children: getDaysNoUI(),
         ),
       ],
     );
@@ -183,11 +206,12 @@ class CustomCalendarState extends State<CustomCalendar> {
         Expanded(
           child: Center(
             child: Text(
-              DateFormat('EEE').format(dateList[i]),
-              style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: Theme.of(context).primaryColor),
+              DateFormat('EE').format(dateList[i]),
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w400,
+                color: Color(0xFF474F5C),
+              ),
             ),
           ),
         ),
@@ -197,6 +221,8 @@ class CustomCalendarState extends State<CustomCalendar> {
   }
 
   List<Widget> getDaysNoUI() {
+    final primarySwatch = ColorGenerator.generateMaterialColor(
+        color: Theme.of(context).primaryColor);
     final List<Widget> noList = <Widget>[];
     int count = 0;
     for (int i = 0; i < dateList.length / 7; i++) {
@@ -215,32 +241,29 @@ class CustomCalendarState extends State<CustomCalendar> {
                       color: Colors.transparent,
                       child: Padding(
                         padding: EdgeInsets.only(
-                            top: 2,
-                            bottom: 2,
-                            left: isStartDateRadius(date) ? 4 : 0,
-                            right: isEndDateRadius(date) ? 4 : 0),
+                          left: isStartDateRadius(date) ? 4 : 0,
+                          right: isEndDateRadius(date) ? 4 : 0,
+                        ),
                         child: Container(
                           decoration: BoxDecoration(
                             color: startDate != null && endDate != null
                                 ? getIsItStartAndEndDate(date) ||
                                         getIsInRange(date)
-                                    ? Theme.of(context)
-                                        .primaryColor
-                                        .withOpacity(0.4)
+                                    ? primarySwatch.shade100
                                     : Colors.transparent
                                 : Colors.transparent,
                             borderRadius: BorderRadius.only(
                               bottomLeft: isStartDateRadius(date)
-                                  ? const Radius.circular(24.0)
+                                  ? const Radius.circular(4)
                                   : const Radius.circular(0.0),
                               topLeft: isStartDateRadius(date)
-                                  ? const Radius.circular(24.0)
+                                  ? const Radius.circular(4)
                                   : const Radius.circular(0.0),
                               topRight: isEndDateRadius(date)
-                                  ? const Radius.circular(24.0)
+                                  ? const Radius.circular(4)
                                   : const Radius.circular(0.0),
                               bottomRight: isEndDateRadius(date)
-                                  ? const Radius.circular(24.0)
+                                  ? const Radius.circular(4)
                                   : const Radius.circular(0.0),
                             ),
                           ),
@@ -251,8 +274,7 @@ class CustomCalendarState extends State<CustomCalendar> {
                   Material(
                     color: Colors.transparent,
                     child: InkWell(
-                      borderRadius:
-                          const BorderRadius.all(Radius.circular(32.0)),
+                      borderRadius: const BorderRadius.all(Radius.circular(4)),
                       onTap: () {
                         if (currentMonthDate.month == date.month) {
                           if (widget.minimumDate != null &&
@@ -295,16 +317,10 @@ class CustomCalendarState extends State<CustomCalendar> {
                         child: Container(
                           decoration: BoxDecoration(
                             color: getIsItStartAndEndDate(date)
-                                ? Theme.of(context).primaryColor
+                                ? primarySwatch
                                 : Colors.transparent,
                             borderRadius:
-                                const BorderRadius.all(Radius.circular(32.0)),
-                            border: Border.all(
-                              color: getIsItStartAndEndDate(date)
-                                  ? Colors.white
-                                  : Colors.transparent,
-                              width: 2,
-                            ),
+                                const BorderRadius.all(Radius.circular(4)),
                             boxShadow: getIsItStartAndEndDate(date)
                                 ? <BoxShadow>[
                                     BoxShadow(
@@ -321,12 +337,9 @@ class CustomCalendarState extends State<CustomCalendar> {
                                   color: getIsItStartAndEndDate(date)
                                       ? Colors.white
                                       : currentMonthDate.month == date.month
-                                          ? Colors.black
-                                          : Colors.grey.withOpacity(0.6),
-                                  fontSize:
-                                      MediaQuery.of(context).size.width > 360
-                                          ? 18
-                                          : 16,
+                                          ? const Color(0xFF474F5C)
+                                          : const Color(0xFFB4B4BB),
+                                  fontSize: 12,
                                   fontWeight: getIsItStartAndEndDate(date)
                                       ? FontWeight.bold
                                       : FontWeight.normal),
@@ -344,14 +357,15 @@ class CustomCalendarState extends State<CustomCalendar> {
                       height: 6,
                       width: 6,
                       decoration: BoxDecoration(
-                          color: DateTime.now().day == date.day &&
-                                  DateTime.now().month == date.month &&
-                                  DateTime.now().year == date.year
-                              ? getIsInRange(date)
-                                  ? Colors.white
-                                  : Theme.of(context).primaryColor
-                              : Colors.transparent,
-                          shape: BoxShape.circle),
+                        color: DateTime.now().day == date.day &&
+                                DateTime.now().month == date.month &&
+                                DateTime.now().year == date.year
+                            ? getIsInRange(date)
+                                ? Colors.white
+                                : primarySwatch
+                            : Colors.transparent,
+                        shape: BoxShape.circle,
+                      ),
                     ),
                   ),
                 ],
