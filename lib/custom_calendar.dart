@@ -1,5 +1,5 @@
 import 'package:custom_date_range_picker/color_generator.dart';
-import 'package:custom_date_range_picker/date_extension.dart';
+import 'package:custom_date_range_picker/date_utilities.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -21,13 +21,13 @@ class CustomCalendar extends StatefulWidget {
 
   final DateTime? initialEndDate;
 
-  final Function(DateTime, DateTime)? startEndDateChange;
+  final Function(DateTime?, DateTime?) startEndDateChange;
 
   const CustomCalendar({
     Key? key,
     this.initialStartDate,
     this.initialEndDate,
-    this.startEndDateChange,
+    required this.startEndDateChange,
     this.minimumDate,
     this.maximumDate,
   }) : super(key: key);
@@ -37,24 +37,25 @@ class CustomCalendar extends StatefulWidget {
 }
 
 class CustomCalendarState extends State<CustomCalendar> {
-  List<DateTime> dateList = <DateTime>[];
+  final List<DateTime> _dateList = <DateTime>[];
   final List<int> _supportedyears = List.generate(160, (index) => 1940 + index);
 
-  DateTime currentMonthDate = DateTime.now();
+  late DateTime _currentMonthDate;
 
-  DateTime? startDate;
+  DateTime? _startDate;
 
-  DateTime? endDate;
+  DateTime? _endDate;
 
   @override
   void initState() {
-    setListOfDate(currentMonthDate);
     if (widget.initialStartDate != null) {
-      startDate = widget.initialStartDate;
+      _startDate = widget.initialStartDate;
     }
     if (widget.initialEndDate != null) {
-      endDate = widget.initialEndDate;
+      _endDate = widget.initialEndDate;
     }
+    _currentMonthDate = _endDate ?? DateTime.now();
+    _setListOfDate(_currentMonthDate);
     super.initState();
   }
 
@@ -63,18 +64,25 @@ class CustomCalendarState extends State<CustomCalendar> {
     super.dispose();
   }
 
-  void setListOfDate(DateTime monthDate) {
-    dateList.clear();
+  clear() {
+    setState(() {
+      _startDate = null;
+      _endDate = null;
+    });
+  }
+
+  void _setListOfDate(DateTime monthDate) {
+    _dateList.clear();
     final DateTime newDate = DateTime(monthDate.year, monthDate.month, 0);
     int previousMothDay = 0;
     if (newDate.weekday < 7) {
       previousMothDay = newDate.weekday;
       for (int i = 1; i <= previousMothDay; i++) {
-        dateList.add(newDate.subtract(Duration(days: previousMothDay - i)));
+        _dateList.add(newDate.subtract(Duration(days: previousMothDay - i)));
       }
     }
     for (int i = 0; i < (42 - previousMothDay); i++) {
-      dateList.add(newDate.add(Duration(days: i + 1)));
+      _dateList.add(newDate.add(Duration(days: i + 1)));
     }
   }
 
@@ -93,9 +101,9 @@ class CustomCalendarState extends State<CustomCalendar> {
                   borderRadius: const BorderRadius.all(Radius.circular(4)),
                   onTap: () {
                     setState(() {
-                      currentMonthDate = DateTime(
-                          currentMonthDate.year, currentMonthDate.month, 0);
-                      setListOfDate(currentMonthDate);
+                      _currentMonthDate = DateTime(
+                          _currentMonthDate.year, _currentMonthDate.month, 0);
+                      _setListOfDate(_currentMonthDate);
                     });
                   },
                   child: Container(
@@ -115,9 +123,9 @@ class CustomCalendarState extends State<CustomCalendar> {
                   borderRadius: const BorderRadius.all(Radius.circular(4.0)),
                   onTap: () {
                     setState(() {
-                      currentMonthDate = DateTime(
-                          currentMonthDate.year, currentMonthDate.month + 2, 0);
-                      setListOfDate(currentMonthDate);
+                      _currentMonthDate = DateTime(_currentMonthDate.year,
+                          _currentMonthDate.month + 2, 0);
+                      _setListOfDate(_currentMonthDate);
                     });
                   },
                   child: Container(
@@ -134,7 +142,7 @@ class CustomCalendarState extends State<CustomCalendar> {
                 child: Container(
                   padding: const EdgeInsets.only(left: 20),
                   child: Text(
-                    DateFormat('MMMM').format(currentMonthDate),
+                    DateFormat('MMMM').format(_currentMonthDate),
                     style: const TextStyle(
                       fontWeight: FontWeight.w500,
                       fontSize: 16,
@@ -166,12 +174,12 @@ class CustomCalendarState extends State<CustomCalendar> {
                         ),
                       )
                       .toList(),
-                  value: currentMonthDate.year,
+                  value: _currentMonthDate.year,
                   onChanged: (value) {
                     setState(() {
-                      currentMonthDate =
-                          DateTime(value!, currentMonthDate.month, 1);
-                      setListOfDate(currentMonthDate);
+                      _currentMonthDate =
+                          DateTime(value!, _currentMonthDate.month, 1);
+                      _setListOfDate(_currentMonthDate);
                     });
                   },
                   menuMaxHeight: 350,
@@ -190,24 +198,24 @@ class CustomCalendarState extends State<CustomCalendar> {
         Padding(
           padding: const EdgeInsets.only(bottom: 20, top: 20),
           child: Row(
-            children: getDaysNameUI(),
+            children: _getDaysNameUI(),
           ),
         ),
         Column(
-          children: getDaysNoUI(),
+          children: _getDaysNoUI(),
         ),
       ],
     );
   }
 
-  List<Widget> getDaysNameUI() {
+  List<Widget> _getDaysNameUI() {
     final List<Widget> listUI = <Widget>[];
     for (int i = 0; i < 7; i++) {
       listUI.add(
         Expanded(
           child: Center(
             child: Text(
-              DateFormat('E').format(dateList[i]),
+              DateFormat('E').format(_dateList[i]),
               style: const TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w400,
@@ -221,15 +229,15 @@ class CustomCalendarState extends State<CustomCalendar> {
     return listUI;
   }
 
-  List<Widget> getDaysNoUI() {
+  List<Widget> _getDaysNoUI() {
     final primarySwatch = ColorGenerator.generateMaterialColor(
         color: Theme.of(context).primaryColor);
     final List<Widget> noList = <Widget>[];
     int count = 0;
-    for (int i = 0; i < dateList.length / 7; i++) {
+    for (int i = 0; i < _dateList.length / 7; i++) {
       final List<Widget> listUI = <Widget>[];
       for (int i = 0; i < 7; i++) {
-        final DateTime date = dateList[count];
+        final DateTime date = _dateList[count];
         listUI.add(
           Expanded(
             child: AspectRatio(
@@ -242,28 +250,28 @@ class CustomCalendarState extends State<CustomCalendar> {
                       color: Colors.transparent,
                       child: Padding(
                         padding: EdgeInsets.only(
-                          left: isStartDateRadius(date) ? 4 : 0,
-                          right: isEndDateRadius(date) ? 4 : 0,
+                          left: _isStartDateRadius(date) ? 4 : 0,
+                          right: _isEndDateRadius(date) ? 4 : 0,
                         ),
                         child: Container(
                           decoration: BoxDecoration(
-                            color: startDate != null && endDate != null
-                                ? getIsItStartAndEndDate(date) ||
-                                        getIsInRange(date)
+                            color: _startDate != null && _endDate != null
+                                ? _getIsItStartAndEndDate(date) ||
+                                        _getIsInRange(date)
                                     ? primarySwatch.shade100
                                     : Colors.transparent
                                 : Colors.transparent,
                             borderRadius: BorderRadius.only(
-                              bottomLeft: isStartDateRadius(date)
+                              bottomLeft: _isStartDateRadius(date)
                                   ? const Radius.circular(4)
                                   : const Radius.circular(0.0),
-                              topLeft: isStartDateRadius(date)
+                              topLeft: _isStartDateRadius(date)
                                   ? const Radius.circular(4)
                                   : const Radius.circular(0.0),
-                              topRight: isEndDateRadius(date)
+                              topRight: _isEndDateRadius(date)
                                   ? const Radius.circular(4)
                                   : const Radius.circular(0.0),
-                              bottomRight: isEndDateRadius(date)
+                              bottomRight: _isEndDateRadius(date)
                                   ? const Radius.circular(4)
                                   : const Radius.circular(0.0),
                             ),
@@ -277,7 +285,7 @@ class CustomCalendarState extends State<CustomCalendar> {
                     child: InkWell(
                       borderRadius: const BorderRadius.all(Radius.circular(4)),
                       onTap: () {
-                        if (currentMonthDate.month == date.month) {
+                        if (_currentMonthDate.month == date.month) {
                           if (widget.minimumDate != null &&
                               widget.maximumDate != null) {
                             final DateTime newminimumDate = DateTime(
@@ -290,7 +298,7 @@ class CustomCalendarState extends State<CustomCalendar> {
                                 widget.maximumDate!.day + 1);
                             if (date.isAfter(newminimumDate) &&
                                 date.isBefore(newmaximumDate)) {
-                              onDateClick(date);
+                              _onDateClick(date);
                             }
                           } else if (widget.minimumDate != null) {
                             final DateTime newminimumDate = DateTime(
@@ -298,7 +306,7 @@ class CustomCalendarState extends State<CustomCalendar> {
                                 widget.minimumDate!.month,
                                 widget.minimumDate!.day - 1);
                             if (date.isAfter(newminimumDate)) {
-                              onDateClick(date);
+                              _onDateClick(date);
                             }
                           } else if (widget.maximumDate != null) {
                             final DateTime newmaximumDate = DateTime(
@@ -306,10 +314,10 @@ class CustomCalendarState extends State<CustomCalendar> {
                                 widget.maximumDate!.month,
                                 widget.maximumDate!.day + 1);
                             if (date.isBefore(newmaximumDate)) {
-                              onDateClick(date);
+                              _onDateClick(date);
                             }
                           } else {
-                            onDateClick(date);
+                            _onDateClick(date);
                           }
                         }
                       },
@@ -317,12 +325,12 @@ class CustomCalendarState extends State<CustomCalendar> {
                         padding: const EdgeInsets.all(2),
                         child: Container(
                           decoration: BoxDecoration(
-                            color: getIsItStartAndEndDate(date)
+                            color: _getIsItStartAndEndDate(date)
                                 ? primarySwatch
                                 : Colors.transparent,
                             borderRadius:
                                 const BorderRadius.all(Radius.circular(4)),
-                            boxShadow: getIsItStartAndEndDate(date)
+                            boxShadow: _getIsItStartAndEndDate(date)
                                 ? <BoxShadow>[
                                     BoxShadow(
                                         color: Colors.grey.withOpacity(0.6),
@@ -335,13 +343,13 @@ class CustomCalendarState extends State<CustomCalendar> {
                             child: Text(
                               '${date.day}',
                               style: TextStyle(
-                                  color: getIsItStartAndEndDate(date)
+                                  color: _getIsItStartAndEndDate(date)
                                       ? Colors.white
-                                      : currentMonthDate.month == date.month
+                                      : _currentMonthDate.month == date.month
                                           ? const Color(0xFF474F5C)
                                           : const Color(0xFFB4B4BB),
                                   fontSize: 12,
-                                  fontWeight: getIsItStartAndEndDate(date)
+                                  fontWeight: _getIsItStartAndEndDate(date)
                                       ? FontWeight.bold
                                       : FontWeight.normal),
                             ),
@@ -361,7 +369,7 @@ class CustomCalendarState extends State<CustomCalendar> {
                         color: DateTime.now().day == date.day &&
                                 DateTime.now().month == date.month &&
                                 DateTime.now().year == date.year
-                            ? getIsInRange(date)
+                            ? _getIsInRange(date)
                                 ? Colors.white
                                 : primarySwatch
                             : Colors.transparent,
@@ -386,9 +394,9 @@ class CustomCalendarState extends State<CustomCalendar> {
     return noList;
   }
 
-  bool getIsInRange(DateTime date) {
-    if (startDate != null && endDate != null) {
-      if (date.isAfter(startDate!) && date.isBefore(endDate!)) {
+  bool _getIsInRange(DateTime date) {
+    if (_startDate != null && _endDate != null) {
+      if (date.isAfter(_startDate!) && date.isBefore(_endDate!)) {
         return true;
       } else {
         return false;
@@ -398,26 +406,26 @@ class CustomCalendarState extends State<CustomCalendar> {
     }
   }
 
-  bool getIsItStartAndEndDate(DateTime date) {
-    if (startDate != null &&
-        startDate!.day == date.day &&
-        startDate!.month == date.month &&
-        startDate!.year == date.year) {
+  bool _getIsItStartAndEndDate(DateTime date) {
+    if (_startDate != null &&
+        _startDate!.day == date.day &&
+        _startDate!.month == date.month &&
+        _startDate!.year == date.year) {
       return true;
-    } else if (endDate != null &&
-        endDate!.day == date.day &&
-        endDate!.month == date.month &&
-        endDate!.year == date.year) {
+    } else if (_endDate != null &&
+        _endDate!.day == date.day &&
+        _endDate!.month == date.month &&
+        _endDate!.year == date.year) {
       return true;
     } else {
       return false;
     }
   }
 
-  bool isStartDateRadius(DateTime date) {
-    if (startDate != null &&
-        startDate!.day == date.day &&
-        startDate!.month == date.month) {
+  bool _isStartDateRadius(DateTime date) {
+    if (_startDate != null &&
+        _startDate!.day == date.day &&
+        _startDate!.month == date.month) {
       return true;
     } else if (date.weekday == 1) {
       return true;
@@ -426,10 +434,10 @@ class CustomCalendarState extends State<CustomCalendar> {
     }
   }
 
-  bool isEndDateRadius(DateTime date) {
-    if (endDate != null &&
-        endDate!.day == date.day &&
-        endDate!.month == date.month) {
+  bool _isEndDateRadius(DateTime date) {
+    if (_endDate != null &&
+        _endDate!.day == date.day &&
+        _endDate!.month == date.month) {
       return true;
     } else if (date.weekday == 7) {
       return true;
@@ -438,37 +446,36 @@ class CustomCalendarState extends State<CustomCalendar> {
     }
   }
 
-  void onDateClick(DateTime date) {
-    if (startDate == null) {
-      startDate = date;
-    } else if (startDate != date && endDate == null) {
-      endDate = date;
-    } else if (DateUtilities.isSameDate(current: startDate!, other: date)) {
-      startDate = null;
-    } else if (DateUtilities.isSameDate(current: endDate!, other: date)) {
-      endDate = null;
+  void _onDateClick(DateTime date) {
+    if (_startDate == null) {
+      _startDate = date;
+    } else if (_startDate != date && _endDate == null) {
+      _endDate = date;
+    } else if (DateUtilities.isSameDate(current: _startDate!, other: date)) {
+      _startDate = null;
+    } else if (DateUtilities.isSameDate(current: _endDate!, other: date)) {
+      _endDate = null;
     }
-    if (startDate == null && endDate != null) {
-      startDate = endDate;
-      endDate = null;
+    if (_startDate == null && _endDate != null) {
+      _startDate = _endDate;
+      _endDate = null;
     }
-    if (startDate != null && endDate != null) {
-      if (!endDate!.isAfter(startDate!)) {
-        final DateTime d = startDate!;
-        startDate = endDate;
-        endDate = d;
+    if (_startDate != null && _endDate != null) {
+      if (!_endDate!.isAfter(_startDate!)) {
+        final DateTime d = _startDate!;
+        _startDate = _endDate;
+        _endDate = d;
       }
-      if (date.isBefore(endDate!)) {
-        startDate = date;
+      if (date.isBefore(_endDate!)) {
+        _startDate = date;
       }
-      if (date.isAfter(startDate!)) {
-        endDate = date;
+      if (date.isAfter(_startDate!)) {
+        _endDate = date;
       }
     }
     setState(() {
-      try {
-        widget.startEndDateChange!(startDate!, endDate!);
-      } catch (_) {}
+      try {} catch (_) {}
     });
+    widget.startEndDateChange(_startDate, _endDate);
   }
 }

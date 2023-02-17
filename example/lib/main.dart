@@ -62,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   const SizedBox(height: 20),
                   Text(
-                    '${startDate != null ? DateFormat("dd, MMM").format(startDate!) : '-'} / ${endDate != null ? DateFormat("dd, MMM").format(endDate!) : '-'}',
+                    '${startDate != null ? DateFormat("dd, MMM yyyy").format(startDate!) : '-'} / ${endDate != null ? DateFormat("dd, MMM yyyy").format(endDate!) : '-'}',
                     style: const TextStyle(
                       fontWeight: FontWeight.w400,
                       fontSize: 18,
@@ -80,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
           showCustomDateRangePicker(
             context,
             dismissible: true,
-            minimumDate: DateTime(2000),
+            minimumDate: DateTime(1990),
             maximumDate: DateTime.now().add(const Duration(days: 30)),
             endDate: endDate,
             startDate: startDate,

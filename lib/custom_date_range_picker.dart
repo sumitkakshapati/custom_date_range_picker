@@ -48,6 +48,9 @@ class CustomDateRangePickerState extends State<CustomDateRangePicker>
     with TickerProviderStateMixin {
   AnimationController? animationController;
 
+  final GlobalKey<CustomCalendarState> _calenderKey =
+      GlobalKey<CustomCalendarState>();
+
   DateTime? startDate;
 
   DateTime? endDate;
@@ -141,12 +144,13 @@ class CustomDateRangePickerState extends State<CustomDateRangePicker>
                           ),
                         ),
                         CustomCalendar(
+                          key: _calenderKey,
                           minimumDate: widget.minimumDate,
                           maximumDate: widget.maximumDate,
                           initialEndDate: widget.initialEndDate,
                           initialStartDate: widget.initialStartDate,
                           startEndDateChange:
-                              (DateTime startDateData, DateTime endDateData) {
+                              (DateTime? startDateData, DateTime? endDateData) {
                             setState(() {
                               startDate = startDateData;
                               endDate = endDateData;
@@ -162,6 +166,7 @@ class CustomDateRangePickerState extends State<CustomDateRangePicker>
                                 setState(() {
                                   startDate = null;
                                   endDate = null;
+                                  _calenderKey.currentState?.clear();
                                 });
                               },
                             ),
