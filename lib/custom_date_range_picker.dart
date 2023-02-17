@@ -50,9 +50,6 @@ class CustomDateRangePickerState extends State<CustomDateRangePicker>
     with TickerProviderStateMixin {
   AnimationController? animationController;
 
-  final GlobalKey<CustomCalendarState> _calenderKey =
-      GlobalKey<CustomCalendarState>();
-
   DateTime? startDate;
 
   DateTime? endDate;
@@ -159,7 +156,6 @@ class CustomDateRangePickerState extends State<CustomDateRangePicker>
                           ),
                         ),
                         CustomCalendar(
-                          key: _calenderKey,
                           minimumDate: widget.minimumDate,
                           maximumDate: widget.maximumDate,
                           initialEndDate: widget.initialEndDate,
@@ -171,29 +167,16 @@ class CustomDateRangePickerState extends State<CustomDateRangePicker>
                               endDate = endDateData;
                             });
                           },
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            CalenderTextButton(
-                              title: "Clear",
-                              onPressed: () {
-                                setState(() {
-                                  startDate = null;
-                                  endDate = null;
-                                  _calenderKey.currentState?.clear();
-                                });
-                              },
-                            ),
-                            CalenderTextButton(
-                              title: "Set",
-                              isDisabled: startDate == null || endDate == null,
-                              onPressed: () {
-                                widget.onApplyClick(startDate!, endDate!);
-                                Navigator.pop(context);
-                              },
-                            ),
-                          ],
+                          onClear: () {
+                            setState(() {
+                              startDate = null;
+                              endDate = null;
+                            });
+                          },
+                          onSetPressed: () {
+                            widget.onApplyClick(startDate!, endDate!);
+                            Navigator.pop(context);
+                          },
                         ),
                       ],
                     ),

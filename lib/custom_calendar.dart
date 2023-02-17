@@ -1,3 +1,6 @@
+import 'dart:ui';
+
+import 'package:custom_date_range_picker/calender_text_button.dart';
 import 'package:custom_date_range_picker/color_generator.dart';
 import 'package:custom_date_range_picker/date_utilities.dart';
 import 'package:flutter/cupertino.dart';
@@ -23,6 +26,10 @@ class CustomCalendar extends StatefulWidget {
 
   final Function(DateTime?, DateTime?) startEndDateChange;
 
+  final VoidCallback onClear;
+
+  final VoidCallback onSetPressed;
+
   const CustomCalendar({
     Key? key,
     this.initialStartDate,
@@ -30,6 +37,8 @@ class CustomCalendar extends StatefulWidget {
     required this.startEndDateChange,
     this.minimumDate,
     this.maximumDate,
+    required this.onClear,
+    required this.onSetPressed,
   }) : super(key: key);
 
   @override
@@ -62,13 +71,6 @@ class CustomCalendarState extends State<CustomCalendar> {
   @override
   void dispose() {
     super.dispose();
-  }
-
-  clear() {
-    setState(() {
-      _startDate = null;
-      _endDate = null;
-    });
   }
 
   void _setListOfDate(DateTime monthDate) {
@@ -204,6 +206,24 @@ class CustomCalendarState extends State<CustomCalendar> {
         Column(
           children: _getDaysNoUI(),
         ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            CalenderTextButton(
+              title: "Clear",
+              onPressed: () {
+                _startDate = null;
+                _endDate = null;
+                widget.onClear();
+              },
+            ),
+            CalenderTextButton(
+              title: "Set",
+              isDisabled: _startDate == null || _endDate == null,
+              onPressed: widget.onSetPressed,
+            ),
+          ],
+        )
       ],
     );
   }
