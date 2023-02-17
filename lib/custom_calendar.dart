@@ -1,8 +1,12 @@
 import 'dart:ui';
 
+import 'package:custom_date_range_picker/calendar_type_section.dart';
+import 'package:custom_date_range_picker/calender_header.dart';
 import 'package:custom_date_range_picker/calender_text_button.dart';
+import 'package:custom_date_range_picker/calender_type.dart';
 import 'package:custom_date_range_picker/color_generator.dart';
 import 'package:custom_date_range_picker/date_utilities.dart';
+import 'package:custom_date_range_picker/month_year_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -47,7 +51,8 @@ class CustomCalendar extends StatefulWidget {
 
 class CustomCalendarState extends State<CustomCalendar> {
   final List<DateTime> _dateList = <DateTime>[];
-  final List<int> _supportedyears = List.generate(160, (index) => 1940 + index);
+  CalenderType _currentCalenderType = CalenderType.AD;
+  bool _isMonthYearPickerSelected = false;
 
   late DateTime _currentMonthDate;
 
@@ -118,7 +123,24 @@ class CustomCalendarState extends State<CustomCalendar> {
                   ),
                 ),
               ),
-              const SizedBox(width: 10),
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _isMonthYearPickerSelected = true;
+                  });
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Text(
+                    DateFormat('MMMM yyyy').format(_currentMonthDate),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 16,
+                      color: Color(0xFF474F5C),
+                    ),
+                  ),
+                ),
+              ),
               Material(
                 color: Colors.transparent,
                 child: InkWell(
@@ -140,113 +162,60 @@ class CustomCalendarState extends State<CustomCalendar> {
                   ),
                 ),
               ),
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.only(left: 20),
-                  child: Text(
-                    DateFormat('MMMM').format(_currentMonthDate),
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 16,
-                      color: Color(0xFF474F5C),
-                    ),
-                  ),
-                ),
+              const Spacer(),
+              CalenderTypeSection(
+                onChanged: (type) {
+                  setState(() {
+                    _currentCalenderType = type;
+                  });
+                },
+                initial: _currentCalenderType,
               ),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: theme.primaryColor,
-                  ),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: DropdownButton<int>(
-                  items: _supportedyears
-                      .map(
-                        (e) => DropdownMenuItem(
-                          value: e,
-                          child: Text("$e",
-                              style: TextStyle(
-                                color: theme.primaryColor,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              )),
-                        ),
-                      )
-                      .toList(),
-                  value: _currentMonthDate.year,
-                  onChanged: (value) {
-                    setState(() {
-                      _currentMonthDate =
-                          DateTime(value!, _currentMonthDate.month, 1);
-                      _setListOfDate(_currentMonthDate);
-                    });
-                  },
-                  menuMaxHeight: 350,
-                  elevation: 1,
-                  isDense: true,
-                  underline: Container(),
-                  icon: Icon(
-                    Icons.expand_more_rounded,
-                    color: theme.primaryColor,
-                  ),
-                ),
-              )
             ],
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 20, top: 20),
-          child: Row(
-            children: _getDaysNameUI(),
-          ),
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          child: _isMonthYearPickerSelected
+              ? MonthYearPicker(
+                  initialDate: _currentMonthDate,
+                  onChanged: (value) {
+                    setState(() {
+                      _isMonthYearPickerSelected = false;
+                      _currentMonthDate = value;
+                    });
+                    _setListOfDate(value);
+                  },
+                )
+              : Column(
+                  children: [
+                    CalenderHeader(dateList: _dateList),
+                    Column(
+                      children: _getDaysNoUI(),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        CalenderTextButton(
+                          title: "Clear",
+                          onPressed: () {
+                            _startDate = null;
+                            _endDate = null;
+                            widget.onClear();
+                          },
+                        ),
+                        CalenderTextButton(
+                          title: "Set",
+                          isDisabled: _startDate == null || _endDate == null,
+                          onPressed: widget.onSetPressed,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
         ),
-        Column(
-          children: _getDaysNoUI(),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            CalenderTextButton(
-              title: "Clear",
-              onPressed: () {
-                _startDate = null;
-                _endDate = null;
-                widget.onClear();
-              },
-            ),
-            CalenderTextButton(
-              title: "Set",
-              isDisabled: _startDate == null || _endDate == null,
-              onPressed: widget.onSetPressed,
-            ),
-          ],
-        )
       ],
     );
-  }
-
-  List<Widget> _getDaysNameUI() {
-    final List<Widget> listUI = <Widget>[];
-    for (int i = 0; i < 7; i++) {
-      listUI.add(
-        Expanded(
-          child: Center(
-            child: Text(
-              DateFormat('E').format(_dateList[i]),
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w400,
-                color: Color(0xFF474F5C),
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-    return listUI;
   }
 
   List<Widget> _getDaysNoUI() {
@@ -276,8 +245,16 @@ class CustomCalendarState extends State<CustomCalendar> {
                         child: Container(
                           decoration: BoxDecoration(
                             color: _startDate != null && _endDate != null
-                                ? _getIsItStartAndEndDate(date) ||
-                                        _getIsInRange(date)
+                                ? DateUtilities.isStartOrEndDate(
+                                          startDate: _startDate,
+                                          endDate: _endDate,
+                                          date: date,
+                                        ) ||
+                                        DateUtilities.isInRange(
+                                          startDate: _startDate,
+                                          endDate: _endDate,
+                                          date: date,
+                                        )
                                     ? primarySwatch.shade100
                                     : Colors.transparent
                                 : Colors.transparent,
@@ -345,12 +322,20 @@ class CustomCalendarState extends State<CustomCalendar> {
                         padding: const EdgeInsets.all(2),
                         child: Container(
                           decoration: BoxDecoration(
-                            color: _getIsItStartAndEndDate(date)
+                            color: DateUtilities.isStartOrEndDate(
+                              startDate: _startDate,
+                              endDate: _endDate,
+                              date: date,
+                            )
                                 ? primarySwatch
                                 : Colors.transparent,
                             borderRadius:
                                 const BorderRadius.all(Radius.circular(4)),
-                            boxShadow: _getIsItStartAndEndDate(date)
+                            boxShadow: DateUtilities.isStartOrEndDate(
+                              startDate: _startDate,
+                              endDate: _endDate,
+                              date: date,
+                            )
                                 ? <BoxShadow>[
                                     BoxShadow(
                                         color: Colors.grey.withOpacity(0.6),
@@ -363,13 +348,21 @@ class CustomCalendarState extends State<CustomCalendar> {
                             child: Text(
                               '${date.day}',
                               style: TextStyle(
-                                  color: _getIsItStartAndEndDate(date)
+                                  color: DateUtilities.isStartOrEndDate(
+                                    startDate: _startDate,
+                                    endDate: _endDate,
+                                    date: date,
+                                  )
                                       ? Colors.white
                                       : _currentMonthDate.month == date.month
                                           ? const Color(0xFF474F5C)
                                           : const Color(0xFFB4B4BB),
                                   fontSize: 12,
-                                  fontWeight: _getIsItStartAndEndDate(date)
+                                  fontWeight: DateUtilities.isStartOrEndDate(
+                                    startDate: _startDate,
+                                    endDate: _endDate,
+                                    date: date,
+                                  )
                                       ? FontWeight.bold
                                       : FontWeight.normal),
                             ),
@@ -389,7 +382,11 @@ class CustomCalendarState extends State<CustomCalendar> {
                         color: DateTime.now().day == date.day &&
                                 DateTime.now().month == date.month &&
                                 DateTime.now().year == date.year
-                            ? _getIsInRange(date)
+                            ? DateUtilities.isInRange(
+                                startDate: _startDate,
+                                endDate: _endDate,
+                                date: date,
+                              )
                                 ? Colors.white
                                 : primarySwatch
                             : Colors.transparent,
@@ -412,34 +409,6 @@ class CustomCalendarState extends State<CustomCalendar> {
       ));
     }
     return noList;
-  }
-
-  bool _getIsInRange(DateTime date) {
-    if (_startDate != null && _endDate != null) {
-      if (date.isAfter(_startDate!) && date.isBefore(_endDate!)) {
-        return true;
-      } else {
-        return false;
-      }
-    } else {
-      return false;
-    }
-  }
-
-  bool _getIsItStartAndEndDate(DateTime date) {
-    if (_startDate != null &&
-        _startDate!.day == date.day &&
-        _startDate!.month == date.month &&
-        _startDate!.year == date.year) {
-      return true;
-    } else if (_endDate != null &&
-        _endDate!.day == date.day &&
-        _endDate!.month == date.month &&
-        _endDate!.year == date.year) {
-      return true;
-    } else {
-      return false;
-    }
   }
 
   bool _isStartDateRadius(DateTime date) {

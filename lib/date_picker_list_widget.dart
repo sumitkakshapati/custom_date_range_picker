@@ -1,0 +1,65 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
+class DatePickerListWidget extends StatelessWidget {
+  final List<String> items;
+  final ValueChanged<String> onChanged;
+  final String currentValue;
+  final FixedExtentScrollController controller;
+
+  const DatePickerListWidget({
+    Key? key,
+    required this.items,
+    required this.currentValue,
+    required this.onChanged,
+    required this.controller,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Container(
+      height: 270,
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: CupertinoPicker.builder(
+        itemExtent: 45,
+        childCount: items.length,
+        selectionOverlay: Container(
+          height: 45,
+          decoration: const BoxDecoration(
+            color: Color(0x33B4B4BB),
+            border: Border(
+              top: BorderSide(
+                color: Colors.white,
+                width: 1.7,
+              ),
+              bottom: BorderSide(
+                color: Colors.white,
+                width: 1.7,
+              ),
+            ),
+          ),
+        ),
+        scrollController: controller,
+        diameterRatio: 1.1,
+        squeeze: 1.3,
+        itemBuilder: (context, index) {
+          return Container(
+            height: 45,
+            alignment: Alignment.center,
+            child: Text(
+              items[index],
+              style: theme.textTheme.subtitle1!.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          );
+        },
+        onSelectedItemChanged: (value) {
+          onChanged(items[value]);
+        },
+      ),
+    );
+  }
+}

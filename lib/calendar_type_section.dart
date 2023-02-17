@@ -15,7 +15,6 @@ class CalenderTypeSection extends StatelessWidget {
     return Align(
       alignment: Alignment.centerRight,
       child: Container(
-        margin: const EdgeInsets.only(bottom: 28),
         decoration: BoxDecoration(
           color: const Color(0xFFEEF1F7),
           borderRadius: BorderRadius.circular(4),
@@ -50,7 +49,6 @@ class _CalenderTypeButton extends StatelessWidget {
   final VoidCallback onPressed;
   final bool isSelected;
   const _CalenderTypeButton({
-    super.key,
     required this.title,
     required this.onPressed,
     required this.isSelected,
