@@ -69,6 +69,22 @@ class _MyHomePageState extends State<MyHomePage> {
                       color: Colors.black,
                     ),
                   ),
+                  if (startDate != null || endDate != null)
+                    MaterialButton(
+                      color: Colors.red,
+                      onPressed: () {
+                        setState(() {
+                          startDate = null;
+                          endDate = null;
+                        });
+                      },
+                      child: const Text(
+                        "Clear Dates",
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
+                    )
                 ],
               ),
             ),
