@@ -120,9 +120,12 @@ class CustomDateRangePickerState extends State<CustomDateRangePicker>
                       children: <Widget>[
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              vertical: 5, horizontal: 4),
+                            vertical: 4.5,
+                            horizontal: 4.5,
+                          ),
                           decoration: BoxDecoration(
                             color: primarySwatch.shade100,
+                            border: Border.all(color: primarySwatch),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Row(
@@ -133,7 +136,7 @@ class CustomDateRangePickerState extends State<CustomDateRangePicker>
                                   title: "Start",
                                 ),
                               ),
-                              const SizedBox(width: 8),
+                              const SizedBox(width: 6),
                               Expanded(
                                 child: DateCard(
                                   title: "End",
