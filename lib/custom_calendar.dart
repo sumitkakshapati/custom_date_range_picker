@@ -1,7 +1,6 @@
-import 'dart:ui';
-
 import 'package:custom_date_range_picker/calendar_type_section.dart';
 import 'package:custom_date_range_picker/calender_header.dart';
+import 'package:custom_date_range_picker/calender_english_month_widget.dart';
 import 'package:custom_date_range_picker/calender_text_button.dart';
 import 'package:custom_date_range_picker/calender_type.dart';
 import 'package:custom_date_range_picker/color_generator.dart';
@@ -73,24 +72,9 @@ class CustomCalendarState extends State<CustomCalendar> {
     super.initState();
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
   void _setListOfDate(DateTime monthDate) {
     _dateList.clear();
-    final DateTime newDate = DateTime(monthDate.year, monthDate.month, 0);
-    int previousMothDay = 0;
-    if (newDate.weekday < 7) {
-      previousMothDay = newDate.weekday;
-      for (int i = 1; i <= previousMothDay; i++) {
-        _dateList.add(newDate.subtract(Duration(days: previousMothDay - i)));
-      }
-    }
-    for (int i = 0; i < (42 - previousMothDay); i++) {
-      _dateList.add(newDate.add(Duration(days: i + 1)));
-    }
+    _dateList.addAll(monthDate.currentMonthDateLists);
   }
 
   @override
@@ -193,8 +177,14 @@ class CustomCalendarState extends State<CustomCalendar> {
               : Column(
                   children: [
                     CalenderHeader(dateList: _dateList),
-                    Column(
-                      children: _getDaysNoUI(),
+                    CalenderEnglishMonthWidget(
+                      currentMonthDate: _currentMonthDate,
+                      currentMonthDays: _dateList,
+                      onDateClick: _onEnglishDateClick,
+                      startDate: _startDate,
+                      endDate: _endDate,
+                      maximumDate: widget.maximumDate,
+                      minimumDate: widget.minimumDate,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
@@ -221,231 +211,14 @@ class CustomCalendarState extends State<CustomCalendar> {
     );
   }
 
-  List<Widget> _getDaysNoUI() {
-    final primarySwatch = ColorGenerator.generateMaterialColor(
-        color: Theme.of(context).primaryColor);
-    final List<Widget> noList = <Widget>[];
-    int count = 0;
-    for (int i = 0; i < _dateList.length / 7; i++) {
-      final List<Widget> listUI = <Widget>[];
-      for (int i = 0; i < 7; i++) {
-        final DateTime date = _dateList[count];
-        listUI.add(
-          Expanded(
-            child: AspectRatio(
-              aspectRatio: 1.0,
-              child: Stack(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(top: 3, bottom: 3),
-                    child: Material(
-                      color: Colors.transparent,
-                      child: Padding(
-                        padding: EdgeInsets.only(
-                          left: _isStartDateRadius(date) ? 4 : 0,
-                          right: _isEndDateRadius(date) ? 4 : 0,
-                        ),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: _startDate != null && _endDate != null
-                                ? DateUtilities.isStartOrEndDate(
-                                          startDate: _startDate,
-                                          endDate: _endDate,
-                                          date: date,
-                                        ) ||
-                                        DateUtilities.isInRange(
-                                          startDate: _startDate,
-                                          endDate: _endDate,
-                                          date: date,
-                                        )
-                                    ? primarySwatch.shade100
-                                    : Colors.transparent
-                                : Colors.transparent,
-                            borderRadius: BorderRadius.only(
-                              bottomLeft: _isStartDateRadius(date)
-                                  ? const Radius.circular(4)
-                                  : const Radius.circular(0.0),
-                              topLeft: _isStartDateRadius(date)
-                                  ? const Radius.circular(4)
-                                  : const Radius.circular(0.0),
-                              topRight: _isEndDateRadius(date)
-                                  ? const Radius.circular(4)
-                                  : const Radius.circular(0.0),
-                              bottomRight: _isEndDateRadius(date)
-                                  ? const Radius.circular(4)
-                                  : const Radius.circular(0.0),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      borderRadius: const BorderRadius.all(Radius.circular(4)),
-                      onTap: () {
-                        if (_currentMonthDate.month == date.month) {
-                          if (widget.minimumDate != null &&
-                              widget.maximumDate != null) {
-                            final DateTime newminimumDate = DateTime(
-                                widget.minimumDate!.year,
-                                widget.minimumDate!.month,
-                                widget.minimumDate!.day - 1);
-                            final DateTime newmaximumDate = DateTime(
-                                widget.maximumDate!.year,
-                                widget.maximumDate!.month,
-                                widget.maximumDate!.day + 1);
-                            if (date.isAfter(newminimumDate) &&
-                                date.isBefore(newmaximumDate)) {
-                              _onDateClick(date);
-                            }
-                          } else if (widget.minimumDate != null) {
-                            final DateTime newminimumDate = DateTime(
-                                widget.minimumDate!.year,
-                                widget.minimumDate!.month,
-                                widget.minimumDate!.day - 1);
-                            if (date.isAfter(newminimumDate)) {
-                              _onDateClick(date);
-                            }
-                          } else if (widget.maximumDate != null) {
-                            final DateTime newmaximumDate = DateTime(
-                                widget.maximumDate!.year,
-                                widget.maximumDate!.month,
-                                widget.maximumDate!.day + 1);
-                            if (date.isBefore(newmaximumDate)) {
-                              _onDateClick(date);
-                            }
-                          } else {
-                            _onDateClick(date);
-                          }
-                        }
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(2),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: DateUtilities.isStartOrEndDate(
-                              startDate: _startDate,
-                              endDate: _endDate,
-                              date: date,
-                            )
-                                ? primarySwatch
-                                : Colors.transparent,
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(4)),
-                            boxShadow: DateUtilities.isStartOrEndDate(
-                              startDate: _startDate,
-                              endDate: _endDate,
-                              date: date,
-                            )
-                                ? <BoxShadow>[
-                                    BoxShadow(
-                                        color: Colors.grey.withOpacity(0.6),
-                                        blurRadius: 4,
-                                        offset: const Offset(0, 0)),
-                                  ]
-                                : null,
-                          ),
-                          child: Center(
-                            child: Text(
-                              '${date.day}',
-                              style: TextStyle(
-                                  color: DateUtilities.isStartOrEndDate(
-                                    startDate: _startDate,
-                                    endDate: _endDate,
-                                    date: date,
-                                  )
-                                      ? Colors.white
-                                      : _currentMonthDate.month == date.month
-                                          ? const Color(0xFF474F5C)
-                                          : const Color(0xFFB4B4BB),
-                                  fontSize: 12,
-                                  fontWeight: DateUtilities.isStartOrEndDate(
-                                    startDate: _startDate,
-                                    endDate: _endDate,
-                                    date: date,
-                                  )
-                                      ? FontWeight.bold
-                                      : FontWeight.normal),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 9,
-                    right: 0,
-                    left: 0,
-                    child: Container(
-                      height: 6,
-                      width: 6,
-                      decoration: BoxDecoration(
-                        color: DateTime.now().day == date.day &&
-                                DateTime.now().month == date.month &&
-                                DateTime.now().year == date.year
-                            ? DateUtilities.isInRange(
-                                startDate: _startDate,
-                                endDate: _endDate,
-                                date: date,
-                              )
-                                ? Colors.white
-                                : primarySwatch
-                            : Colors.transparent,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-        count += 1;
-      }
-      noList.add(Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: listUI,
-      ));
-    }
-    return noList;
-  }
-
-  bool _isStartDateRadius(DateTime date) {
-    if (_startDate != null &&
-        _startDate!.day == date.day &&
-        _startDate!.month == date.month) {
-      return true;
-    } else if (date.weekday == 1) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  bool _isEndDateRadius(DateTime date) {
-    if (_endDate != null &&
-        _endDate!.day == date.day &&
-        _endDate!.month == date.month) {
-      return true;
-    } else if (date.weekday == 7) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  void _onDateClick(DateTime date) {
+  void _onEnglishDateClick(DateTime date) {
     if (_startDate == null) {
       _startDate = date;
     } else if (_startDate != date && _endDate == null) {
       _endDate = date;
-    } else if (DateUtilities.isSameDate(current: _startDate!, other: date)) {
+    } else if (_startDate!.isSameDate(date)) {
       _startDate = null;
-    } else if (DateUtilities.isSameDate(current: _endDate!, other: date)) {
+    } else if (_endDate!.isSameDate(date)) {
       _endDate = null;
     }
     if (_startDate == null && _endDate != null) {

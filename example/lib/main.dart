@@ -96,8 +96,6 @@ class _MyHomePageState extends State<MyHomePage> {
           showCustomDateRangePicker(
             context,
             dismissible: true,
-            minimumDate: DateTime(1950),
-            maximumDate: DateTime(2050),
             endDate: endDate,
             startDate: startDate,
             primaryColor: const Color(0xFF57559B),
@@ -109,7 +107,7 @@ class _MyHomePageState extends State<MyHomePage> {
             },
           );
         },
-        tooltip: 'choose date Range',
+        tooltip: 'Choose date Range',
         child: const Icon(Icons.calendar_today_outlined, color: Colors.white),
       ),
     );

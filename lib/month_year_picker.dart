@@ -37,7 +37,7 @@ class _MonthYearPickerState extends State<MonthYearPicker> {
 
   @override
   Widget build(BuildContext context) {
-    final _theme = Theme.of(context);
+    final theme = Theme.of(context);
     return SizedBox(
       height: 382,
       child: Column(
@@ -68,7 +68,7 @@ class _MonthYearPickerState extends State<MonthYearPicker> {
           ),
           const SizedBox(height: 20),
           MaterialButton(
-            color: _theme.primaryColor,
+            color: theme.primaryColor,
             onPressed: () {
               final currentMonthIndex =
                   DateUtilities.englishMonths.indexOf(currentMonth);

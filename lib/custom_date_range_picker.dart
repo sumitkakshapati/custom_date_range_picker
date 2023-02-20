@@ -14,9 +14,9 @@ import 'package:flutter/material.dart';
 ///   required this.onCancelClick,
 /// }`
 class CustomDateRangePicker extends StatefulWidget {
-  final DateTime minimumDate;
+  final DateTime? minimumDate;
 
-  final DateTime maximumDate;
+  final DateTime? maximumDate;
 
   final bool barrierDismissible;
 
@@ -194,8 +194,8 @@ class CustomDateRangePickerState extends State<CustomDateRangePicker>
 void showCustomDateRangePicker(
   BuildContext context, {
   required bool dismissible,
-  required DateTime minimumDate,
-  required DateTime maximumDate,
+  DateTime? minimumDate,
+  DateTime? maximumDate,
   DateTime? startDate,
   DateTime? endDate,
   required Function(DateTime startDate, DateTime endDate) onApplyClick,
