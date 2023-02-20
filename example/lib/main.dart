@@ -1,8 +1,6 @@
-import 'package:custom_date_range_picker/calender_type.dart';
 import 'package:custom_date_range_picker/custom_date_range_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:nepali_utils/nepali_utils.dart';
 
 void main() {
   runApp(const MyApp());
