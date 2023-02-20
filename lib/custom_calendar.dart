@@ -1,6 +1,7 @@
 import 'package:custom_date_range_picker/calendar_type_section.dart';
 import 'package:custom_date_range_picker/calender_header.dart';
 import 'package:custom_date_range_picker/calender_english_month_widget.dart';
+import 'package:custom_date_range_picker/calender_nepali_month_widget.dart';
 import 'package:custom_date_range_picker/calender_text_button.dart';
 import 'package:custom_date_range_picker/calender_type.dart';
 import 'package:custom_date_range_picker/color_generator.dart';
@@ -8,7 +9,7 @@ import 'package:custom_date_range_picker/date_utilities.dart';
 import 'package:custom_date_range_picker/month_year_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:nepali_utils/nepali_utils.dart';
 
 /// `const CustomCalendar({
 ///   Key? key,
@@ -33,6 +34,10 @@ class CustomCalendar extends StatefulWidget {
 
   final VoidCallback onSetPressed;
 
+  final ValueChanged<CalenderType> onTypeChanged;
+
+  final CalenderType initialCalenderType;
+
   const CustomCalendar({
     Key? key,
     this.initialStartDate,
@@ -42,6 +47,8 @@ class CustomCalendar extends StatefulWidget {
     this.maximumDate,
     required this.onClear,
     required this.onSetPressed,
+    required this.onTypeChanged,
+    required this.initialCalenderType,
   }) : super(key: key);
 
   @override
@@ -49,8 +56,9 @@ class CustomCalendar extends StatefulWidget {
 }
 
 class CustomCalendarState extends State<CustomCalendar> {
-  final List<DateTime> _dateList = <DateTime>[];
-  CalenderType _currentCalenderType = CalenderType.AD;
+  final List<DateTime> _englishDateList = <DateTime>[];
+  final List<NepaliDateTime> _nepaliDateList = <NepaliDateTime>[];
+  late CalenderType _currentCalenderType;
   bool _isMonthYearPickerSelected = false;
 
   late DateTime _currentMonthDate;
@@ -61,6 +69,7 @@ class CustomCalendarState extends State<CustomCalendar> {
 
   @override
   void initState() {
+    _currentCalenderType = widget.initialCalenderType;
     if (widget.initialStartDate != null) {
       _startDate = widget.initialStartDate;
     }
@@ -73,8 +82,10 @@ class CustomCalendarState extends State<CustomCalendar> {
   }
 
   void _setListOfDate(DateTime monthDate) {
-    _dateList.clear();
-    _dateList.addAll(monthDate.currentMonthDateLists);
+    _englishDateList.clear();
+    _englishDateList.addAll(monthDate.currentMonthDateLists);
+    _nepaliDateList.clear();
+    _nepaliDateList.addAll(monthDate.toNepaliDateTime().currentMonthDateLists);
   }
 
   @override
@@ -140,7 +151,9 @@ class CustomCalendarState extends State<CustomCalendar> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: Text(
-                    DateFormat('MMM yyyy').format(_currentMonthDate),
+                    _currentCalenderType == CalenderType.AD
+                        ? _currentMonthDate.MMMYYYY
+                        : _currentMonthDate.toNepaliDateTime().MMMYYYY,
                     style: TextStyle(
                       fontWeight: FontWeight.w500,
                       fontSize: 16,
@@ -155,6 +168,7 @@ class CustomCalendarState extends State<CustomCalendar> {
                   setState(() {
                     _currentCalenderType = type;
                   });
+                  widget.onTypeChanged(type);
                 },
                 initial: _currentCalenderType,
               ),
@@ -166,6 +180,7 @@ class CustomCalendarState extends State<CustomCalendar> {
           child: _isMonthYearPickerSelected
               ? MonthYearPicker(
                   initialDate: _currentMonthDate,
+                  type: _currentCalenderType,
                   onChanged: (value) {
                     setState(() {
                       _isMonthYearPickerSelected = false;
@@ -176,16 +191,29 @@ class CustomCalendarState extends State<CustomCalendar> {
                 )
               : Column(
                   children: [
-                    CalenderHeader(dateList: _dateList),
-                    CalenderEnglishMonthWidget(
-                      currentMonthDate: _currentMonthDate,
-                      currentMonthDays: _dateList,
-                      onDateClick: _onEnglishDateClick,
-                      startDate: _startDate,
-                      endDate: _endDate,
-                      maximumDate: widget.maximumDate,
-                      minimumDate: widget.minimumDate,
-                    ),
+                    CalenderHeader(dateList: _englishDateList),
+                    if (_currentCalenderType == CalenderType.AD)
+                      CalenderEnglishMonthWidget(
+                        currentMonthDate: _currentMonthDate,
+                        currentMonthDays: _englishDateList,
+                        onDateClick: _onEnglishDateClick,
+                        startDate: _startDate,
+                        endDate: _endDate,
+                        maximumDate: widget.maximumDate,
+                        minimumDate: widget.minimumDate,
+                      ),
+                    if (_currentCalenderType == CalenderType.BS)
+                      CalenderNepaliMonthWidget(
+                        currentMonthDate: _currentMonthDate.toNepaliDateTime(),
+                        currentMonthDays: _nepaliDateList,
+                        onDateClick: (value) {
+                          _onEnglishDateClick(value.toDateTime());
+                        },
+                        startDate: _startDate?.toNepaliDateTime(),
+                        endDate: _endDate?.toNepaliDateTime(),
+                        maximumDate: widget.maximumDate?.toNepaliDateTime(),
+                        minimumDate: widget.minimumDate?.toNepaliDateTime(),
+                      ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [

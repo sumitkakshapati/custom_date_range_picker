@@ -1,14 +1,18 @@
+import 'package:custom_date_range_picker/calender_type.dart';
 import 'package:custom_date_range_picker/date_picker_list_widget.dart';
 import 'package:custom_date_range_picker/date_utilities.dart';
 import 'package:flutter/material.dart';
+import 'package:nepali_utils/nepali_utils.dart';
 
 class MonthYearPicker extends StatefulWidget {
   final DateTime initialDate;
   final ValueChanged<DateTime> onChanged;
+  final CalenderType type;
   const MonthYearPicker({
     super.key,
     required this.initialDate,
     required this.onChanged,
+    required this.type,
   });
 
   @override
@@ -26,13 +30,22 @@ class _MonthYearPickerState extends State<MonthYearPicker> {
   @override
   void initState() {
     super.initState();
-    currentYear = widget.initialDate.year.toString();
-    currentMonth = DateUtilities.englishMonths[widget.initialDate.month - 1];
-    final int yearIndex = DateUtilities.englishYears.indexOf(currentYear);
+    final nepaliDate = widget.initialDate.toNepaliDateTime();
+    currentYear = widget.type.isAD
+        ? widget.initialDate.year.toString()
+        : nepaliDate.year.toString();
+    currentMonth = widget.type.isAD
+        ? DateUtilities.englishMonths[widget.initialDate.month - 1]
+        : DateUtilities.nepaliMonths[nepaliDate.month - 1];
+    final int yearIndex = widget.type.isAD
+        ? DateUtilities.englishYears.indexOf(currentYear)
+        : DateUtilities.nepaliYears.indexOf(currentYear);
     _yearController = FixedExtentScrollController(
         initialItem: yearIndex == -1 ? 0 : yearIndex);
-    _monthController =
-        FixedExtentScrollController(initialItem: widget.initialDate.month - 1);
+    _monthController = FixedExtentScrollController(
+        initialItem:
+            (widget.type.isAD ? widget.initialDate.month : nepaliDate.month) -
+                1);
   }
 
   @override
@@ -46,7 +59,9 @@ class _MonthYearPickerState extends State<MonthYearPicker> {
             children: [
               Expanded(
                 child: DatePickerListWidget(
-                  items: DateUtilities.englishYears,
+                  items: widget.type == CalenderType.AD
+                      ? DateUtilities.englishYears
+                      : DateUtilities.nepaliYears,
                   currentValue: currentYear,
                   controller: _yearController,
                   onChanged: (val) {
@@ -56,7 +71,9 @@ class _MonthYearPickerState extends State<MonthYearPicker> {
               ),
               Expanded(
                 child: DatePickerListWidget(
-                  items: DateUtilities.englishMonths,
+                  items: widget.type == CalenderType.AD
+                      ? DateUtilities.englishMonths
+                      : DateUtilities.nepaliMonths,
                   currentValue: currentMonth.toString(),
                   controller: _monthController,
                   onChanged: (val) {
@@ -70,10 +87,18 @@ class _MonthYearPickerState extends State<MonthYearPicker> {
           MaterialButton(
             color: theme.primaryColor,
             onPressed: () {
-              final currentMonthIndex =
-                  DateUtilities.englishMonths.indexOf(currentMonth);
-              widget.onChanged(
-                  DateTime(int.parse(currentYear), currentMonthIndex + 1));
+              if (widget.type.isAD) {
+                final currentMonthIndex =
+                    DateUtilities.englishMonths.indexOf(currentMonth);
+                widget.onChanged(
+                    DateTime(int.parse(currentYear), currentMonthIndex + 1));
+              } else {
+                final currentMonthIndex =
+                    DateUtilities.nepaliMonths.indexOf(currentMonth);
+                final nepaliDate = NepaliDateTime(
+                    int.parse(currentYear), currentMonthIndex + 1);
+                widget.onChanged(nepaliDate.toDateTime());
+              }
             },
             minWidth: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 14),

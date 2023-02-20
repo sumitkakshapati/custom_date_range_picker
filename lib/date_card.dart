@@ -1,10 +1,18 @@
+import 'package:custom_date_range_picker/calender_type.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:nepali_utils/nepali_utils.dart';
 
 class DateCard extends StatelessWidget {
   final String title;
   final DateTime? date;
-  const DateCard({super.key, required this.title, this.date});
+  final CalenderType type;
+  const DateCard({
+    super.key,
+    required this.title,
+    this.date,
+    required this.type,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +39,12 @@ class DateCard extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            date != null ? DateFormat('dd/MM/yyyy').format(date!) : '--/-- ',
+            date != null
+                ? (type == CalenderType.AD
+                    ? DateFormat('dd/MM/yyyy').format(date!)
+                    : NepaliDateFormat('dd/MM/yyyy')
+                        .format(date!.toNepaliDateTime()))
+                : '--/-- ',
             style: TextStyle(
               fontWeight: date != null ? FontWeight.w500 : FontWeight.w400,
               fontSize: 14,

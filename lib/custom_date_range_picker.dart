@@ -1,3 +1,4 @@
+import 'package:custom_date_range_picker/calender_type.dart';
 import 'package:custom_date_range_picker/color_generator.dart';
 import 'package:custom_date_range_picker/custom_calendar.dart';
 import 'package:custom_date_range_picker/date_card.dart';
@@ -50,6 +51,8 @@ class CustomDateRangePickerState extends State<CustomDateRangePicker>
   DateTime? startDate;
 
   DateTime? endDate;
+
+  CalenderType calenderType = CalenderType.AD;
 
   @override
   void initState() {
@@ -130,6 +133,7 @@ class CustomDateRangePickerState extends State<CustomDateRangePicker>
                                 child: DateCard(
                                   date: startDate,
                                   title: "Start",
+                                  type: calenderType,
                                 ),
                               ),
                               const SizedBox(width: 6),
@@ -137,6 +141,7 @@ class CustomDateRangePickerState extends State<CustomDateRangePicker>
                                 child: DateCard(
                                   title: "End",
                                   date: endDate,
+                                  type: calenderType,
                                 ),
                               )
                             ],
@@ -147,6 +152,12 @@ class CustomDateRangePickerState extends State<CustomDateRangePicker>
                           maximumDate: widget.maximumDate,
                           initialEndDate: widget.initialEndDate,
                           initialStartDate: widget.initialStartDate,
+                          initialCalenderType: calenderType,
+                          onTypeChanged: (type) {
+                            setState(() {
+                              calenderType = type;
+                            });
+                          },
                           startEndDateChange:
                               (DateTime? startDateData, DateTime? endDateData) {
                             setState(() {
