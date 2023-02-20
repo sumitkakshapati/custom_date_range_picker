@@ -1,6 +1,8 @@
+import 'package:custom_date_range_picker/calender_type.dart';
 import 'package:custom_date_range_picker/custom_date_range_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:nepali_utils/nepali_utils.dart';
 
 void main() {
   runApp(const MyApp());
@@ -31,6 +33,9 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   DateTime? startDate;
   DateTime? endDate;
+  String formatedStartDate = "-";
+  String formatedEndDate = "-";
+  CalenderType type = CalenderType.AD;
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   const SizedBox(height: 20),
                   Text(
-                    '${startDate != null ? DateFormat("dd, MMM yyyy").format(startDate!) : '-'} / ${endDate != null ? DateFormat("dd, MMM yyyy").format(endDate!) : '-'}',
+                    '$formatedStartDate / $formatedEndDate',
                     style: const TextStyle(
                       fontWeight: FontWeight.w400,
                       fontSize: 18,
@@ -99,11 +104,26 @@ class _MyHomePageState extends State<MyHomePage> {
             endDate: endDate,
             startDate: startDate,
             primaryColor: const Color(0xFF57559B),
-            onApplyClick: (start, end) {
-              setState(() {
-                endDate = end;
-                startDate = start;
-              });
+            calenderType: type,
+            onApplyClick: (rangeDate) {
+              type = rangeDate.type;
+              endDate = rangeDate.endDateInAD;
+              startDate = rangeDate.startDateInAD;
+              if (rangeDate.type.isAD) {
+                setState(() {
+                  formatedStartDate = DateFormat("dd-MMMM-yyyy")
+                      .format(rangeDate.startDateInAD);
+                  formatedEndDate =
+                      DateFormat("dd-MMMM-yyyy").format(rangeDate.endDateInAD);
+                });
+              } else {
+                setState(() {
+                  formatedStartDate = NepaliDateFormat("dd-MMMM-yyyy")
+                      .format(rangeDate.startDateInBS);
+                  formatedEndDate = NepaliDateFormat("dd-MMMM-yyyy")
+                      .format(rangeDate.endDateInBS);
+                });
+              }
             },
           );
         },

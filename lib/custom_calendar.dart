@@ -163,15 +163,16 @@ class CustomCalendarState extends State<CustomCalendar> {
                 ),
               ),
               const Spacer(),
-              CalenderTypeSection(
-                onChanged: (type) {
-                  setState(() {
-                    _currentCalenderType = type;
-                  });
-                  widget.onTypeChanged(type);
-                },
-                initial: _currentCalenderType,
-              ),
+              if (_isMonthYearPickerSelected == false)
+                CalenderTypeSection(
+                  onChanged: (type) {
+                    setState(() {
+                      _currentCalenderType = type;
+                    });
+                    widget.onTypeChanged(type);
+                  },
+                  initial: _currentCalenderType,
+                ),
             ],
           ),
         ),

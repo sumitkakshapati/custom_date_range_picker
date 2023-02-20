@@ -9,10 +9,8 @@ class DateUtilities {
       List.generate(100, (index) => (_nepaliMinDate.year + index).toString());
 
   static final _englishMinDate = DateTime(1943, 1, 1);
-  static final _englishMaxDate = DateTime(2043, 12, 31);
 
   static final _nepaliMinDate = NepaliDateTime(2000, 1, 1);
-  static final _nepaliMaxDate = NepaliDateTime(2100, 12, 30);
 
   static final List<String> englishMonths = [
     "January",
