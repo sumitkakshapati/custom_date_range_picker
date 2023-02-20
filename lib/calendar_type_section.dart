@@ -60,7 +60,7 @@ class _CalenderTypeButton extends StatelessWidget {
     return InkWell(
       onTap: onPressed,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7.5),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7.5),
         decoration: BoxDecoration(
           color: isSelected ? Colors.white : Colors.transparent,
           borderRadius: BorderRadius.circular(4),

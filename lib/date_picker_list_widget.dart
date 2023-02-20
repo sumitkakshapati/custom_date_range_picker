@@ -27,18 +27,9 @@ class DatePickerListWidget extends StatelessWidget {
         childCount: items.length,
         selectionOverlay: Container(
           height: 45,
-          decoration: const BoxDecoration(
-            color: Color(0x33B4B4BB),
-            border: Border(
-              top: BorderSide(
-                color: Colors.white,
-                width: 1.7,
-              ),
-              bottom: BorderSide(
-                color: Colors.white,
-                width: 1.7,
-              ),
-            ),
+          decoration: BoxDecoration(
+            color: const Color(0x33B4B4BB),
+            borderRadius: BorderRadius.circular(4),
           ),
         ),
         scrollController: controller,

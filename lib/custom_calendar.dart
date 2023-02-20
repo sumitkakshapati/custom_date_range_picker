@@ -96,6 +96,8 @@ class CustomCalendarState extends State<CustomCalendar> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final primarySwatch =
+        ColorGenerator.generateMaterialColor(color: theme.primaryColor);
     return Column(
       children: <Widget>[
         Padding(
@@ -118,25 +120,7 @@ class CustomCalendarState extends State<CustomCalendar> {
                     child: Icon(
                       CupertinoIcons.left_chevron,
                       color: theme.primaryColor,
-                      size: 20,
-                    ),
-                  ),
-                ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _isMonthYearPickerSelected = true;
-                  });
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Text(
-                    DateFormat('MMMM yyyy').format(_currentMonthDate),
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 16,
-                      color: Color(0xFF474F5C),
+                      size: 24,
                     ),
                   ),
                 ),
@@ -157,7 +141,26 @@ class CustomCalendarState extends State<CustomCalendar> {
                     child: Icon(
                       CupertinoIcons.right_chevron,
                       color: theme.primaryColor,
-                      size: 20,
+                      size: 24,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _isMonthYearPickerSelected = true;
+                  });
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Text(
+                    DateFormat('MMM yyyy').format(_currentMonthDate),
+                    style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 16,
+                      color: primarySwatch.shade400,
                     ),
                   ),
                 ),
