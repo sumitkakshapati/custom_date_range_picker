@@ -60,6 +60,7 @@ class CustomCalendarState extends State<CustomCalendar> {
   final List<NepaliDateTime> _nepaliDateList = <NepaliDateTime>[];
   late CalenderType _currentCalenderType;
   bool _isMonthYearPickerSelected = false;
+  final GlobalKey _columnKey = GlobalKey();
 
   late DateTime _currentMonthDate;
 
@@ -163,78 +164,86 @@ class CustomCalendarState extends State<CustomCalendar> {
                 ),
               ),
               const Spacer(),
-              if (_isMonthYearPickerSelected == false)
-                CalenderTypeSection(
+              Opacity(
+                opacity: _isMonthYearPickerSelected ? 0 : 1,
+                child: CalenderTypeSection(
                   onChanged: (type) {
-                    setState(() {
-                      _currentCalenderType = type;
-                    });
+                    if (_isMonthYearPickerSelected == false) {
+                      setState(() {
+                        _currentCalenderType = type;
+                      });
+                    }
                     widget.onTypeChanged(type);
                   },
                   initial: _currentCalenderType,
                 ),
+              ),
             ],
           ),
         ),
-        AnimatedSwitcher(
-          duration: const Duration(milliseconds: 300),
-          child: _isMonthYearPickerSelected
-              ? MonthYearPicker(
-                  initialDate: _currentMonthDate,
-                  type: _currentCalenderType,
-                  onChanged: (value) {
-                    setState(() {
-                      _isMonthYearPickerSelected = false;
-                      _currentMonthDate = value;
-                    });
-                    _setListOfDate(value);
-                  },
-                )
-              : Column(
-                  children: [
-                    CalenderHeader(dateList: _englishDateList),
-                    if (_currentCalenderType == CalenderType.AD)
-                      CalenderEnglishMonthWidget(
-                        currentMonthDate: _currentMonthDate,
-                        currentMonthDays: _englishDateList,
-                        onDateClick: _onEnglishDateClick,
-                        startDate: _startDate,
-                        endDate: _endDate,
-                        maximumDate: widget.maximumDate,
-                        minimumDate: widget.minimumDate,
-                      ),
-                    if (_currentCalenderType == CalenderType.BS)
-                      CalenderNepaliMonthWidget(
-                        currentMonthDate: _currentMonthDate.toNepaliDateTime(),
-                        currentMonthDays: _nepaliDateList,
-                        onDateClick: (value) {
-                          _onEnglishDateClick(value.toDateTime());
-                        },
-                        startDate: _startDate?.toNepaliDateTime(),
-                        endDate: _endDate?.toNepaliDateTime(),
-                        maximumDate: widget.maximumDate?.toNepaliDateTime(),
-                        minimumDate: widget.minimumDate?.toNepaliDateTime(),
-                      ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        CalenderTextButton(
-                          title: "Clear",
-                          onPressed: () {
-                            _startDate = null;
-                            _endDate = null;
-                            widget.onClear();
-                          },
-                        ),
-                        CalenderTextButton(
-                          title: "Set",
-                          isDisabled: _startDate == null || _endDate == null,
-                          onPressed: widget.onSetPressed,
-                        ),
-                      ],
-                    ),
-                  ],
+        AnimatedCrossFade(
+          crossFadeState: _isMonthYearPickerSelected
+              ? CrossFadeState.showSecond
+              : CrossFadeState.showFirst,
+          firstChild: Column(
+            key: _columnKey,
+            children: [
+              CalenderHeader(dateList: _englishDateList),
+              if (_currentCalenderType == CalenderType.AD)
+                CalenderEnglishMonthWidget(
+                  currentMonthDate: _currentMonthDate,
+                  currentMonthDays: _englishDateList,
+                  onDateClick: _onEnglishDateClick,
+                  startDate: _startDate,
+                  endDate: _endDate,
+                  maximumDate: widget.maximumDate,
+                  minimumDate: widget.minimumDate,
                 ),
+              if (_currentCalenderType == CalenderType.BS)
+                CalenderNepaliMonthWidget(
+                  currentMonthDate: _currentMonthDate.toNepaliDateTime(),
+                  currentMonthDays: _nepaliDateList,
+                  onDateClick: (value) {
+                    _onEnglishDateClick(value.toDateTime());
+                  },
+                  startDate: _startDate?.toNepaliDateTime(),
+                  endDate: _endDate?.toNepaliDateTime(),
+                  maximumDate: widget.maximumDate?.toNepaliDateTime(),
+                  minimumDate: widget.minimumDate?.toNepaliDateTime(),
+                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  CalenderTextButton(
+                    title: "Clear",
+                    onPressed: () {
+                      _startDate = null;
+                      _endDate = null;
+                      widget.onClear();
+                    },
+                  ),
+                  CalenderTextButton(
+                    title: "Set",
+                    isDisabled: _startDate == null || _endDate == null,
+                    onPressed: widget.onSetPressed,
+                  ),
+                ],
+              ),
+            ],
+          ),
+          secondChild: MonthYearPicker(
+            height: (_columnKey.currentContext?.findRenderObject() as RenderBox?)?.size.height ?? 382,
+            initialDate: _currentMonthDate,
+            type: _currentCalenderType,
+            onChanged: (value) {
+              setState(() {
+                _isMonthYearPickerSelected = false;
+                _currentMonthDate = value;
+              });
+              _setListOfDate(value);
+            },
+          ),
+          duration: const Duration(milliseconds: 300),
         ),
       ],
     );

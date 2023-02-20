@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Date Range Picker',
       theme: ThemeData(
         brightness: Brightness.light,
       ),
@@ -79,6 +79,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         setState(() {
                           startDate = null;
                           endDate = null;
+                          formatedStartDate = "-";
+                          formatedEndDate = "-";
                         });
                       },
                       child: const Text(

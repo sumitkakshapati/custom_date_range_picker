@@ -8,11 +8,13 @@ class MonthYearPicker extends StatefulWidget {
   final DateTime initialDate;
   final ValueChanged<DateTime> onChanged;
   final CalenderType type;
+  final double height;
   const MonthYearPicker({
     super.key,
     required this.initialDate,
     required this.onChanged,
     required this.type,
+    required this.height,
   });
 
   @override
@@ -52,7 +54,7 @@ class _MonthYearPickerState extends State<MonthYearPicker> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return SizedBox(
-      height: 382,
+      height: widget.height,
       child: Column(
         children: [
           Row(
@@ -64,6 +66,7 @@ class _MonthYearPickerState extends State<MonthYearPicker> {
                       : DateUtilities.nepaliYears,
                   currentValue: currentYear,
                   controller: _yearController,
+                  height: widget.height - 80,
                   onChanged: (val) {
                     currentYear = val;
                   },
@@ -76,6 +79,7 @@ class _MonthYearPickerState extends State<MonthYearPicker> {
                       : DateUtilities.nepaliMonths,
                   currentValue: currentMonth.toString(),
                   controller: _monthController,
+                  height: widget.height - 80,
                   onChanged: (val) {
                     currentMonth = val;
                   },
@@ -83,7 +87,7 @@ class _MonthYearPickerState extends State<MonthYearPicker> {
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          const Spacer(),
           MaterialButton(
             color: theme.primaryColor,
             onPressed: () {

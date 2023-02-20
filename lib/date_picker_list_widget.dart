@@ -5,6 +5,7 @@ class DatePickerListWidget extends StatelessWidget {
   final List<String> items;
   final ValueChanged<String> onChanged;
   final String currentValue;
+  final double height;
   final FixedExtentScrollController controller;
 
   const DatePickerListWidget({
@@ -13,6 +14,7 @@ class DatePickerListWidget extends StatelessWidget {
     required this.currentValue,
     required this.onChanged,
     required this.controller,
+    this.height = 270,
   }) : super(key: key);
 
   @override
@@ -20,7 +22,7 @@ class DatePickerListWidget extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Container(
-      height: 270,
+      height: height,
       padding: const EdgeInsets.symmetric(horizontal: 4),
       child: CupertinoPicker.builder(
         itemExtent: 45,
@@ -33,8 +35,8 @@ class DatePickerListWidget extends StatelessWidget {
           ),
         ),
         scrollController: controller,
-        diameterRatio: 1.1,
-        squeeze: 1.3,
+        diameterRatio: 1.35,
+        squeeze: 1.25,
         itemBuilder: (context, index) {
           return Container(
             height: 45,
