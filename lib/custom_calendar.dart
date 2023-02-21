@@ -224,7 +224,7 @@ class CustomCalendarState extends State<CustomCalendar> {
                   ),
                   CalenderTextButton(
                     title: "Set",
-                    isDisabled: _startDate == null || _endDate == null,
+                    isDisabled: _startDate == null,
                     onPressed: widget.onSetPressed,
                   ),
                 ],
@@ -232,7 +232,11 @@ class CustomCalendarState extends State<CustomCalendar> {
             ],
           ),
           secondChild: MonthYearPicker(
-            height: (_columnKey.currentContext?.findRenderObject() as RenderBox?)?.size.height ?? 382,
+            height:
+                (_columnKey.currentContext?.findRenderObject() as RenderBox?)
+                        ?.size
+                        .height ??
+                    382,
             initialDate: _currentMonthDate,
             type: _currentCalenderType,
             onChanged: (value) {

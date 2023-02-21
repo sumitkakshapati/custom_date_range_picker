@@ -101,8 +101,6 @@ class _MyHomePageState extends State<MyHomePage> {
           showCustomDateRangePicker(
             context,
             dismissible: true,
-            endDate: endDate,
-            startDate: startDate,
             primaryColor: const Color(0xFF57559B),
             calenderType: type,
             onApplyClick: (rangeDate) {
@@ -113,15 +111,19 @@ class _MyHomePageState extends State<MyHomePage> {
                 setState(() {
                   formatedStartDate = DateFormat("dd-MMMM-yyyy")
                       .format(rangeDate.startDateInAD);
-                  formatedEndDate =
-                      DateFormat("dd-MMMM-yyyy").format(rangeDate.endDateInAD);
+                  if (rangeDate.endDateInAD != null) {
+                    formatedEndDate = DateFormat("dd-MMMM-yyyy")
+                        .format(rangeDate.endDateInAD!);
+                  }
                 });
               } else {
                 setState(() {
                   formatedStartDate = NepaliDateFormat("dd-MMMM-yyyy")
                       .format(rangeDate.startDateInBS);
-                  formatedEndDate = NepaliDateFormat("dd-MMMM-yyyy")
-                      .format(rangeDate.endDateInBS);
+                  if (rangeDate.endDateInBS != null) {
+                    formatedEndDate = NepaliDateFormat("dd-MMMM-yyyy")
+                        .format(rangeDate.endDateInBS!);
+                  }
                 });
               }
             },

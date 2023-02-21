@@ -182,12 +182,12 @@ class CustomDateRangePickerState extends State<CustomDateRangePicker>
                             if (calenderType.isAD) {
                               rangeDate = CalenderRangeDate.fromAD(
                                 startDate!,
-                                endDate!,
+                                endDate,
                               );
                             } else {
                               rangeDate = CalenderRangeDate.fromBS(
                                 startDate!.toNepaliDateTime(),
-                                endDate!.toNepaliDateTime(),
+                                endDate?.toNepaliDateTime(),
                               );
                             }
                             widget.onApplyClick(rangeDate);
