@@ -104,13 +104,15 @@ class CustomCalendarState extends State<CustomCalendar> {
                 color: Colors.transparent,
                 child: InkWell(
                   borderRadius: const BorderRadius.all(Radius.circular(4)),
-                  onTap: () {
-                    setState(() {
-                      _currentMonthDate = DateTime(
-                          _currentMonthDate.year, _currentMonthDate.month, 0);
-                      _setListOfDate(_currentMonthDate);
-                    });
-                  },
+                  onTap: _isMonthYearPickerSelected
+                      ? null
+                      : () {
+                          setState(() {
+                            _currentMonthDate = DateTime(_currentMonthDate.year,
+                                _currentMonthDate.month, 0);
+                            _setListOfDate(_currentMonthDate);
+                          });
+                        },
                   child: Container(
                     padding: const EdgeInsets.all(4),
                     child: Icon(
@@ -125,13 +127,15 @@ class CustomCalendarState extends State<CustomCalendar> {
                 color: Colors.transparent,
                 child: InkWell(
                   borderRadius: const BorderRadius.all(Radius.circular(4.0)),
-                  onTap: () {
-                    setState(() {
-                      _currentMonthDate = DateTime(_currentMonthDate.year,
-                          _currentMonthDate.month + 2, 0);
-                      _setListOfDate(_currentMonthDate);
-                    });
-                  },
+                  onTap: _isMonthYearPickerSelected
+                      ? null
+                      : () {
+                          setState(() {
+                            _currentMonthDate = DateTime(_currentMonthDate.year,
+                                _currentMonthDate.month + 2, 0);
+                            _setListOfDate(_currentMonthDate);
+                          });
+                        },
                   child: Container(
                     padding: const EdgeInsets.all(4),
                     child: Icon(

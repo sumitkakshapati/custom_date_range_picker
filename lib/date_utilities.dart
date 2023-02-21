@@ -353,6 +353,6 @@ extension NepaliDateExtension on NepaliDateTime {
 
   // ignore: non_constant_identifier_names
   String get MMMYYYY {
-    return NepaliDateFormat('MMM yyyy').format(this);
+    return NepaliDateFormat('MMMM yyyy').format(this);
   }
 }
