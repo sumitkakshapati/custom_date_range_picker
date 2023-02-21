@@ -154,7 +154,7 @@ class CalenderNepaliMonthWidget extends StatelessWidget {
                       height: 6,
                       width: 6,
                       decoration: BoxDecoration(
-                        color: DateTime.now().isSameDate(date)
+                        color: NepaliDateTime.now().isSameDate(date)
                             ? date.isInRange(
                                 startDate: startDate,
                                 endDate: endDate,
