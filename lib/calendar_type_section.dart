@@ -51,6 +51,9 @@ class _CalenderTypeSectionState extends State<CalenderTypeSection>
         end: Alignment.centerLeft,
       ),
     );
+    if (type.isBS) {
+      _animationController.forward(from: 1);
+    }
     super.initState();
   }
 
