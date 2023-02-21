@@ -117,7 +117,9 @@ class CustomCalendarState extends State<CustomCalendar> {
                     padding: const EdgeInsets.all(4),
                     child: Icon(
                       CupertinoIcons.left_chevron,
-                      color: theme.primaryColor,
+                      color: _isMonthYearPickerSelected
+                          ? const Color(0xFFB4B4BB)
+                          : theme.primaryColor,
                       size: 24,
                     ),
                   ),
@@ -140,7 +142,9 @@ class CustomCalendarState extends State<CustomCalendar> {
                     padding: const EdgeInsets.all(4),
                     child: Icon(
                       CupertinoIcons.right_chevron,
-                      color: theme.primaryColor,
+                      color: _isMonthYearPickerSelected
+                          ? const Color(0xFFB4B4BB)
+                          : theme.primaryColor,
                       size: 24,
                     ),
                   ),
