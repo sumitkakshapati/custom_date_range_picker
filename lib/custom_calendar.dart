@@ -77,7 +77,7 @@ class CustomCalendarState extends State<CustomCalendar> {
     if (widget.initialEndDate != null) {
       _endDate = widget.initialEndDate;
     }
-    _currentMonthDate = _endDate ?? DateTime.now();
+    _currentMonthDate = _endDate ?? _startDate ?? DateTime.now();
     _setListOfDate(_currentMonthDate);
     super.initState();
   }

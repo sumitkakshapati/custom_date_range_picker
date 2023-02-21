@@ -101,6 +101,8 @@ class _MyHomePageState extends State<MyHomePage> {
           showCustomDateRangePicker(
             context,
             dismissible: true,
+            endDate: endDate,
+            startDate: startDate,
             primaryColor: const Color(0xFF57559B),
             calenderType: type,
             onApplyClick: (rangeDate) {
