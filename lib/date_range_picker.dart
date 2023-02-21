@@ -49,10 +49,7 @@ class CustomDateRangePicker extends StatefulWidget {
   CustomDateRangePickerState createState() => CustomDateRangePickerState();
 }
 
-class CustomDateRangePickerState extends State<CustomDateRangePicker>
-    with TickerProviderStateMixin {
-  AnimationController? animationController;
-
+class CustomDateRangePickerState extends State<CustomDateRangePicker> {
   DateTime? startDate;
 
   DateTime? endDate;
@@ -62,18 +59,9 @@ class CustomDateRangePickerState extends State<CustomDateRangePicker>
   @override
   void initState() {
     calenderType = widget.calenderType ?? CalenderType.AD;
-    animationController = AnimationController(
-        duration: const Duration(milliseconds: 400), vsync: this);
     startDate = widget.initialStartDate;
     endDate = widget.initialEndDate;
-    animationController?.forward();
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    animationController?.dispose();
-    super.dispose();
   }
 
   @override
