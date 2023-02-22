@@ -2,8 +2,8 @@ import 'package:custom_date_range_picker/calender_range_date.dart';
 import 'package:custom_date_range_picker/calender_type.dart';
 import 'package:custom_date_range_picker/color_generator.dart';
 import 'package:custom_date_range_picker/custom_calendar.dart';
-import 'package:custom_date_range_picker/date_card.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:nepali_utils/nepali_utils.dart';
 
 /// `CustomDateRangePicker({
@@ -64,6 +64,25 @@ class CustomDateRangePickerState extends State<CustomDateRangePicker> {
     super.initState();
   }
 
+  String get formatedStartEndDate {
+    if (startDate != null && endDate != null) {
+      if (calenderType.isAD) {
+        return "${DateFormat('dd/MM/yyyy').format(startDate!)} - ${DateFormat('dd/MM/yyyy').format(endDate!)}";
+      } else {
+        return "${NepaliDateFormat('dd/MM/yyyy').format(startDate!.toNepaliDateTime())} - ${NepaliDateFormat('dd/MM/yyyy').format(endDate!.toNepaliDateTime())}";
+      }
+    } else if (startDate != null && endDate == null) {
+      if (calenderType.isAD) {
+        return DateFormat('dd/MM/yyyy').format(startDate!);
+      } else {
+        return NepaliDateFormat('dd/MM/yyyy')
+            .format(startDate!.toNepaliDateTime());
+      }
+    } else {
+      return "-";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final primarySwatch = ColorGenerator.generateMaterialColor(
@@ -113,31 +132,34 @@ class CustomDateRangePickerState extends State<CustomDateRangePicker> {
                       children: <Widget>[
                         Container(
                           padding: const EdgeInsets.symmetric(
-                            vertical: 4.5,
-                            horizontal: 4.5,
+                            vertical: 8,
+                            horizontal: 12,
                           ),
                           decoration: BoxDecoration(
                             color: primarySwatch.shade100,
                             border: Border.all(color: primarySwatch),
                             borderRadius: BorderRadius.circular(4),
                           ),
-                          child: Row(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: <Widget>[
-                              Expanded(
-                                child: DateCard(
-                                  date: startDate,
-                                  title: "Start",
-                                  type: calenderType,
+                              const Text(
+                                "Date",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 14,
+                                  color: Color(0xFF474F5C),
                                 ),
                               ),
-                              const SizedBox(width: 6),
-                              Expanded(
-                                child: DateCard(
-                                  title: "End",
-                                  date: endDate,
-                                  type: calenderType,
+                              const SizedBox(height: 8),
+                              Text(
+                                formatedStartEndDate,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: primarySwatch.shade400,
                                 ),
-                              )
+                              ),
                             ],
                           ),
                         ),
