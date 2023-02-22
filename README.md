@@ -15,21 +15,13 @@ To call the CustomDateRangePicker component, you need to pass the following prop
           showCustomDateRangePicker(
             context,
             dismissible: true,
-            minimumDate: DateTime.now(),
-            maximumDate: DateTime.now().add(const Duration(days: 30)),
             endDate: endDate,
             startDate: startDate,
-            onApplyClick: (start, end) {
-              setState(() {
-                endDate = end;
-                startDate = start;
-              });
-            },
-            onCancelClick: () {
-              setState(() {
-                endDate = null;
-                startDate = null;
-              });
+            calenderType: CalenderType.AD,
+            onApplyClick: (rangeDate) {
+              type = rangeDate.type;
+              endDate = rangeDate.endDateInAD;
+              startDate = rangeDate.startDateInAD;
             },
           );
         },
