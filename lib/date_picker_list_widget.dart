@@ -43,7 +43,7 @@ class DatePickerListWidget extends StatelessWidget {
             alignment: Alignment.center,
             child: Text(
               items[index],
-              style: theme.textTheme.subtitle1!.copyWith(
+              style: theme.textTheme.titleMedium!.copyWith(
                 fontWeight: FontWeight.w500,
               ),
             ),

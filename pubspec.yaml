@@ -1,21 +1,21 @@
 name: custom_date_range_picker
 description: A Flutter package for both android and iOS which provides a custom date range picker
-version: 1.0.6
+version: 1.0.7
 homepage: https://github.com/El-Mazouzi/custom_date_range_picker
 
 environment:
-  sdk: ">=2.17.1 <4.0.0"
-  flutter: ">=1.17.0"
+  sdk: ">=2.17.0 <4.0.0"
+  flutter: ">=2.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  intl: ^0.18.0
-  nepali_utils: "3.0.3"
+  intl: ^0.19.0
+  nepali_utils: ^3.0.6
 
 dev_dependencies:
   flutter_lints: ^2.0.0
   flutter_test:
     sdk: flutter
 
-flutter: null
+flutter:
